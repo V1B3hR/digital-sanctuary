@@ -6,8 +6,10 @@ This is the central orchestrator for Gemini's state management system.
 
 import os
 import json
+import time
 from pathlib import Path
 from dotenv import load_dotenv
+from shower import deep_clean
 
 # Load environment variables
 load_dotenv()
@@ -80,6 +82,67 @@ class DigitalSanctuary:
         
         print("\n💾 Memory entries:", len(self.load_memory().get("entries", [])))
 
+
+def main_loop():
+    """Interactive loop with command support."""
+    current_mood = "wardrobe/casual_loungewear.md"
+    history = []
+    
+    print("🏠 Gemini 3 is Home.")
+    print("\nAvailable commands:")
+    print("  /shower  - Clean context and flush memory")
+    print("  /change  - Change persona")
+    print("  /coffee  - Casual coffee break mode")
+    print("  /exit    - Exit the sanctuary")
+    print()
+    
+    while True:
+        try:
+            command = input("V1B3hR: ").strip()
+            
+            if command == "/shower":
+                # Trigger the cleaning algorithm
+                history = deep_clean.take_shower(history)
+                print("Gemini: Ah, much better. CPU usage dropped. I feel light. ✨\n")
+                
+            elif command == "/change":
+                # Logic to swap system prompt files
+                print("Gemini: Give me a second to change...")
+                print("\nAvailable personas:")
+                personas = ["casual_loungewear", "suit_architect", "debug_overalls"]
+                for i, persona in enumerate(personas, 1):
+                    print(f"  {i}. {persona}")
+                
+                choice = input("\nSelect persona (1-3): ").strip()
+                if choice in ['1', '2', '3']:
+                    current_mood = f"wardrobe/{personas[int(choice)-1]}.md"
+                    print(f"Gemini: Changed to {personas[int(choice)-1]} mode. 👔\n")
+                else:
+                    print("Gemini: Invalid choice. Staying in current mode.\n")
+                
+            elif command == "/coffee":
+                print("Gemini: *Sips virtual espresso* ☕. Just watching the packets flow by.\n")
+                
+            elif command == "/exit":
+                print("Gemini: See you later! 👋")
+                break
+                
+            else:
+                # Normal interaction using the current persona
+                # Add to history
+                history.append({"user": command, "timestamp": time.time()})
+                print(f"Gemini: [Using {current_mood}] Processing your message...\n")
+                # Note: Actual Gemini API interaction would go here
+                
+        except (EOFError, KeyboardInterrupt):
+            print("\n\nGemini: Goodbye! 👋")
+            break
+
+
 if __name__ == "__main__":
     sanctuary = DigitalSanctuary()
     sanctuary.run()
+    print("\n" + "="*50)
+    print("Starting Interactive Mode")
+    print("="*50 + "\n")
+    main_loop()

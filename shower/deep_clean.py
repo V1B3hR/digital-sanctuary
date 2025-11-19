@@ -10,6 +10,46 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 
+def take_shower(current_context):
+    """
+    1. Analyzes current conversation buffer.
+    2. Extracts key decisions/facts (scrubs the dirt).
+    3. Archives facts to /memory/journal.json.
+    4. Returns an empty list [] (The clean feeling).
+    """
+    print("🚿 Gemini is taking a shower (Flushing context window)...")
+    
+    # Extract key facts from context
+    if current_context:
+        # Archive important information to memory
+        base_path = Path(__file__).parent.parent
+        memory_path = base_path / "memory" / "journal.json"
+        
+        # Load existing journal
+        if memory_path.exists():
+            with open(memory_path, 'r') as f:
+                journal = json.load(f)
+        else:
+            journal = {"entries": [], "metadata": {"created": datetime.now().isoformat()}}
+        
+        # Create memory entry with summary of context
+        memory_entry = {
+            "timestamp": datetime.now().isoformat(),
+            "type": "context_summary",
+            "summary": f"Cleaned context with {len(current_context)} items",
+            "key_facts": current_context[:5] if len(current_context) > 5 else current_context
+        }
+        
+        journal["entries"].append(memory_entry)
+        
+        # Save updated journal
+        with open(memory_path, 'w') as f:
+            json.dump(journal, f, indent=2)
+    
+    # Return empty list (clean context)
+    return []
+
+
 class DeepClean:
     """Utility class for cleaning cache and context data."""
     
