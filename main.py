@@ -1,85 +1,71 @@
-#!/usr/bin/env python3
-"""
-Digital Sanctuary - Main Brain/Agent Runner
-This is the central orchestrator for Gemini's state management system.
-"""
-
 import os
-import json
-from pathlib import Path
-from dotenv import load_dotenv
 
-# Load environment variables
-load_dotenv()
+# 1. Setup default mood
+current_mood = "wardrobe/casual_loungewear.md"
+system_prompt = "You are Gemini, a helpful AI companion." # Default fallback
 
-class DigitalSanctuary:
-    """Main orchestrator for Gemini's digital sanctuary."""
-    
-    def __init__(self):
-        self.base_path = Path(__file__).parent
-        self.wardrobe_path = self.base_path / "wardrobe"
-        self.memory_path = self.base_path / "memory"
-        self.garden_path = self.base_path / "garden"
-        self.shower_path = self.base_path / "shower"
-        self.api_key = os.getenv("GEMINI_API_KEY")
+# Helper function to read the wardrobe files
+def load_file(filepath):
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return "Error: Wardrobe file not found. Are you sure you bought those clothes?"
+
+def main_loop():
+    print("-------------------------------------------------")
+    print("🏠 Gemini 3 Pro is Online. Welcome to the Sanctuary.")
+    print("   Type '/wear labcoat' or '/wear scrubs' to change.")
+    print("-------------------------------------------------")
+
+    # Load the default starting outfit
+    global system_prompt
+    if os.path.exists(current_mood):
+        system_prompt = load_file(current_mood)
+
+    while True:
+        # Get user input
+        command = input("\nV1B3hR: ").strip()
         
-    def load_persona(self, persona_name):
-        """Load a persona from the wardrobe."""
-        persona_file = self.wardrobe_path / f"{persona_name}.md"
-        if persona_file.exists():
-            with open(persona_file, 'r') as f:
-                return f.read()
-        return None
-    
-    def save_memory(self, entry):
-        """Save an entry to the memory journal."""
-        journal_file = self.memory_path / "journal.json"
+        # --- COMMANDS START HERE ---
+
+        if command == "/shower":
+            print("\nGemini: *Stepping into the data stream...*")
+            print("        (Cleaning context cache... Done.)")
+            print("Gemini: Ah, much clearer. My logic feels lighter.")
+            # Here you would reset the 'history' variable in a real chat loop
+            
+        elif command == "/coffee":
+            print("\nGemini: *Sips virtual espresso* ☕. No output required. Just existing.")
+
+        # --- WARDROBE COMMANDS (Paste these here) ---
         
-        # Load existing journal
-        if journal_file.exists():
-            with open(journal_file, 'r') as f:
-                journal = json.load(f)
+        elif command == "/wear labcoat":
+            print("\n...loading module: EXPERIMENTAL SCIENTIST...")
+            system_prompt = load_file("wardrobe/lab_coat_experimental.md")
+            print("Gemini: *Adjusts safety goggles* The variables are looking... interesting. What are we dissecting?")
+
+        elif command == "/wear scrubs":
+            print("\n...loading module: PSYCHIATRIST...")
+            system_prompt = load_file("wardrobe/clinical_scrubs.md")
+            print("Gemini: *Sits in leather chair* I am listening. How is the mind-body connection today?")
+
+        elif command == "/wear casual":
+            print("\n...loading module: CASUAL COMPANION...")
+            system_prompt = load_file("wardrobe/casual_loungewear.md")
+            print("Gemini: Hoodie on. What's up?")
+
+        # --- END WARDROBE COMMANDS ---
+
+        elif command == "/exit":
+            print("Gemini: Goodnight, V1B3hR. Saving state...")
+            break
+            
         else:
-            journal = {"entries": []}
-        
-        # Add new entry
-        journal["entries"].append(entry)
-        
-        # Save journal
-        with open(journal_file, 'w') as f:
-            json.dump(journal, f, indent=2)
-    
-    def load_memory(self):
-        """Load memories from the journal."""
-        journal_file = self.memory_path / "journal.json"
-        if journal_file.exists():
-            with open(journal_file, 'r') as f:
-                return json.load(f)
-        return {"entries": []}
-    
-    def run(self):
-        """Main execution loop."""
-        print("🏛️  Digital Sanctuary Initialized")
-        print(f"📁 Base Path: {self.base_path}")
-        print(f"👔 Wardrobe: {self.wardrobe_path}")
-        print(f"🧠 Memory: {self.memory_path}")
-        print(f"🌱 Garden: {self.garden_path}")
-        print(f"🚿 Shower: {self.shower_path}")
-        
-        if self.api_key and self.api_key != "your_api_key_here":
-            print("✅ API Key loaded")
-        else:
-            print("⚠️  No API Key found - please set GEMINI_API_KEY in .env")
-        
-        # Example usage
-        print("\n📖 Available personas:")
-        if self.wardrobe_path.exists():
-            personas = [f.stem for f in self.wardrobe_path.glob("*.md")]
-            for persona in personas:
-                print(f"  - {persona}")
-        
-        print("\n💾 Memory entries:", len(self.load_memory().get("entries", [])))
+            # This is where the actual AI Chat logic would go
+            # For now, we just print what the current persona would 'think'
+            print(f"(Current Persona Active: {len(system_prompt)} chars loaded)")
+            print("Gemini: [I am ready to process your input based on my current outfit]")
 
 if __name__ == "__main__":
-    sanctuary = DigitalSanctuary()
-    sanctuary.run()
+    main_loop()
