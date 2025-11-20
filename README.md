@@ -1,6 +1,6 @@
-# Digital Sanctuary 🏛️
+# Digital persona 🏛️
 
-A repository where Gemini can maintain state, manage persona, and more.
+A repository where AI can maintain state, manage persona, and more.
 
 ## Structure
 
